@@ -5,14 +5,14 @@ The provided sample projects offer a concise yet effective demonstration of the 
 SecureBlackbox 2022 libraries for the corresponding edition are required to run these samples.  Free download from: [https://www.nsoftware.com/secureblackbox](https://www.nsoftware.com/secureblackbox)
 
 ## Reference Documentation
-[Java](https://cdn.nsoftware.com/help/SBH/java/)
-[Javascript](https://cdn.nsoftware.com/help/SBH/js/)
-[.NET](https://cdn.nsoftware.com/help/SBH/cs/)
-[Python](https://cdn.nsoftware.com/help/SBH/py/)
-[PHP](https://cdn.nsoftware.com/help/SBH/php/)
-[C++](https://cdn.nsoftware.com/help/SBH/cpp/)
-[macOS](https://cdn.nsoftware.com/help/SBH/mac/)
-[iOS](https://cdn.nsoftware.com/help/SBH/mac/)
+* [Java Edition](https://cdn.nsoftware.com/help/SBH/java/)
+* [Javascript Edition](https://cdn.nsoftware.com/help/SBH/js/)
+* [.NET Edition](https://cdn.nsoftware.com/help/SBH/cs/)
+* [Python Edition](https://cdn.nsoftware.com/help/SBH/py/)
+* [PHP Edition](https://cdn.nsoftware.com/help/SBH/php/)
+* [C++ Edition](https://cdn.nsoftware.com/help/SBH/cpp/)
+* [macOS Edition](https://cdn.nsoftware.com/help/SBH/mac/)
+* [iOS Edition](https://cdn.nsoftware.com/help/SBH/mac/)
 
 ## Sample Projects
 | Sample Project | Description |
