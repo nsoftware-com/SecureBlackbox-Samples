@@ -1,0 +1,140 @@
+unit usignf;
+
+interface
+
+uses
+  SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, ComCtrls,
+  SBxTypes, SBxCore, SBxCertificateManager, SBxSOAPVerifier;
+
+type
+  TFormUsign = class(TForm)
+    gbGeneralEnc: TGroupBox;
+    lHashAlgorithm: TLabel;
+    lSignatureType: TLabel;
+    edSignatureType: TEdit;
+    edHashAlgorithm: TEdit;
+    gbKeyInfo: TGroupBox;
+    lbKeyName: TLabel;
+    edKeyName: TEdit;
+    gbSigningCertificates: TGroupBox;
+    lvKnownCertificates: TListView;
+    btnRemove: TButton;
+    btnAdd: TButton;
+    btnOK: TButton;
+    btnCancel: TButton;
+    DlgOpen: TOpenDialog;
+    Label10: TLabel;
+    procedure btnAddClick(Sender: TObject);
+    procedure btnRemoveClick(Sender: TObject);
+  private
+    { Private declarations }
+    FVerifier: TsbxSOAPVerifier;
+
+    procedure UpdateCertificates;
+  public
+    procedure SetSignature(Value: TsbxSOAPVerifier; SigIndex : Integer);
+  end;
+
+var
+  FormUsign: TFormUsign;
+
+implementation
+
+{$R *.dfm}
+
+function BinaryToString(const Buffer : TBytes): string;
+var
+  i: integer;
+begin
+  Result := '';
+
+  for i := 0 to Length(Buffer) - 1 do
+    Result := Result + IntToHex(Buffer[i], 1);
+end;
+
+procedure TFormUsign.SetSignature(Value: TsbxSOAPVerifier; SigIndex : Integer);
+begin
+  FVerifier := Value;
+
+  case FVerifier.Signatures[SigIndex].SignatureType of
+    sstWSSSignature: edSignatureType.Text := 'WSS Signature';
+    sstSOAPSignature: edSignatureType.Text := 'SOAP Signature';
+  else
+    edSignatureType.Text := 'Unknown signature';
+  end;
+
+  edHashAlgorithm.Text := FVerifier.Signatures[SigIndex].HashAlgorithm;
+
+  edKeyName.Text := FVerifier.Config('KeyName');
+
+  UpdateCertificates;
+end;
+
+procedure TFormUsign.UpdateCertificates;
+var
+  Item: TListItem;
+  i: Integer;
+  s: string;
+  CertificateManager: TsbxCertificateManager;
+begin
+  lvKnownCertificates.Items.BeginUpdate;
+  lvKnownCertificates.Items.Clear;
+
+  CertificateManager := TsbxCertificateManager.Create(nil);
+  try
+    for i := 0 to FVerifier.KnownCertificates.Count - 1 do
+    begin
+      CertificateManager.Certificate := FVerifier.KnownCertificates.Item[i];
+
+      s := CertificateManager.Certificate.Issuer;
+      if s = '' then
+        s := '<unknown>';
+
+      Item := lvKnownCertificates.Items.Add;
+      Item.Caption := BinaryToString(CertificateManager.Certificate.SerialNumber);
+      Item.SubItems.Add(s);
+    end;
+  finally
+    FreeAndNil(CertificateManager);
+  end;
+
+  lvKnownCertificates.Items.EndUpdate;
+end;
+
+procedure TFormUsign.btnAddClick(Sender: TObject);
+var
+  CertificateManager: TsbxCertificateManager;
+begin
+  DlgOpen.Title := 'Select certificate file';
+  DlgOpen.Filter := 'PEM-encoded certificate (*.pem)|*.PEM|DER-encoded certificate (*.cer)|*.CER|PFX-encoded certificate (*.pfx)|*.PFX';
+  if DlgOpen.Execute then
+  begin
+    CertificateManager := TsbxCertificateManager.Create(nil);
+    try
+      try
+        CertificateManager.ImportFromFile(DlgOpen.Filename, InputBox('Please enter passphrase:', '',''));
+
+        FVerifier.KnownCertificates.Add(CertificateManager.Certificate);
+
+        UpdateCertificates;
+      except
+        on E: Exception do
+          MessageDlg('Failed to load certificate', mtError, [mbOk], 0);
+      end;
+    finally
+      FreeAndNil(CertificateManager);
+    end;
+  end;
+end;
+
+procedure TFormUsign.btnRemoveClick(Sender: TObject);
+begin
+  if Assigned(lvKnownCertificates.Selected) then
+  begin
+    FVerifier.KnownCertificates.RemoveAt(lvKnownCertificates.Selected.Index);
+    UpdateCertificates;
+  end;
+end;
+
+end.

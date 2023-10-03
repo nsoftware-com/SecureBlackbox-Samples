@@ -5,12 +5,10 @@ The provided sample projects offer a concise yet effective demonstration of the 
 SecureBlackbox 2022 libraries for the corresponding edition are required to run these samples.  Free download from: [https://www.nsoftware.com/secureblackbox](https://www.nsoftware.com/secureblackbox)
 
 ## Reference Documentation
-* [Java Edition](https://cdn.nsoftware.com/help/SBH/java/)
-* [Javascript Edition](https://cdn.nsoftware.com/help/SBH/js/)
-* [.NET Edition](https://cdn.nsoftware.com/help/SBH/cs/)
 * [Python Edition](https://cdn.nsoftware.com/help/SBH/py/)
 * [PHP Edition](https://cdn.nsoftware.com/help/SBH/php/)
 * [C++ Edition](https://cdn.nsoftware.com/help/SBH/cpp/)
+* [Delphi Edition](https://cdn.nsoftware.com/help/SBH/dlp/)
 * [macOS Edition](https://cdn.nsoftware.com/help/SBH/mac/)
 * [iOS Edition](https://cdn.nsoftware.com/help/SBH/mac/)
 
@@ -21,6 +19,7 @@ SecureBlackbox 2022 libraries for the corresponding edition are required to run 
 | [ASiC Verifier](./SecureBlackbox%20Samples/ASiC%20Verifier) | A simple ASiC verifier created with the ASiCVerifier component. Use it to verify ASiC signatures. |
 | [Archive Reader](./SecureBlackbox%20Samples/Archive%20Reader) | A simple Archive Reader sample created with the ArchiveReader component. Use it to read and extract files from archives. |
 | [Archive Writer](./SecureBlackbox%20Samples/Archive%20Writer) | A simple Archive Writer sample created with the ArchiveWriter component. Use it to create and modify archives. |
+| [Authenticator](./SecureBlackbox%20Samples/Authenticator) | A simple Authenticator created with the Authenticator component. Use it to user authentication. |
 | [Authenticode Signer](./SecureBlackbox%20Samples/Authenticode%20Signer) | A simple authenticode signer created with the AuthenticodeSigner component. Use it to sign EXE and DLL files in accordance with MS Authenticode technology. |
 | [Authenticode Verifier](./SecureBlackbox%20Samples/Authenticode%20Verifier) | A simple authenticode verifier based on the AuthenticodeVerifier component. Use it to verify signed EXE and DLL files. |
 | [CAdES Signer](./SecureBlackbox%20Samples/CAdES%20Signer) | A simple CAdES generator created with the CAdESSigner component. The sample supports creation of CAdES signatures of different conformance levels. |
@@ -53,6 +52,7 @@ SecureBlackbox 2022 libraries for the corresponding edition are required to run 
 | [Message Timestamp Verifier](./SecureBlackbox%20Samples/Message%20Timestamp%20Verifier) | This small demo shows how to validate PKCS7 timestamped messages with the MessageTimestampVerifier class. |
 | [Message Timestamper](./SecureBlackbox%20Samples/Message%20Timestamper) | This example illustrates the creation of PKCS7 timestamped messages. |
 | [Message Verifier](./SecureBlackbox%20Samples/Message%20Verifier) | This sample illustrates the verification of signed PKCS7 documents. For advanced validations that include certificate chain processing see CAdESVerifier. |
+| [OAuth Client](./SecureBlackbox%20Samples/OAuth%20Client) | A small sample that shows how to authorize the users using OAuth 2.0 servers. |
 | [OTP Client](./SecureBlackbox%20Samples/OTP%20Client) | A very simple OTP password generator. TOTP and HOTP protocols are supported. |
 | [OTP Server](./SecureBlackbox%20Samples/OTP%20Server) | A simple OTP password generator (server side). HOTP and TOTP protocols are supported. |
 | [Office Decryptor](./SecureBlackbox%20Samples/Office%20Decryptor) | A very simple office document decryptor app built using the OfficeDecryptor control. |
@@ -63,6 +63,7 @@ SecureBlackbox 2022 libraries for the corresponding edition are required to run 
 | [PDF Encryptor](./SecureBlackbox%20Samples/PDF%20Encryptor) | A tiny PDF encryption example which supports password- and certificate-based encryption. |
 | [PDF Signer](./SecureBlackbox%20Samples/PDF%20Signer) | An easy-to-use PDF signing example. Both generic and PAdES signatures are supported. |
 | [PDF Signer External](./SecureBlackbox%20Samples/PDF%20Signer%20External) | An easy-to-use PDF signing example. Both generic and PAdES signatures are supported. |
+| [PDF Signer with PKI Proxy](./SecureBlackbox%20Samples/PDF%20Signer%20with%20PKI%20Proxy) | PDF signing with PKI Proxy example. |
 | [PDF Verifier](./SecureBlackbox%20Samples/PDF%20Verifier) | This small demo illustrates the use of the PDFVerifier control for processing PDF signatures. |
 | [PGP Keys](./SecureBlackbox%20Samples/PGP%20Keys) | A simple PGP keyring manager. Generation and browsing of PGP keys are supported. |
 | [PGP Reader](./SecureBlackbox%20Samples/PGP%20Reader) | Use this easy-to-use example to learn about integrating PGP decryption and verification into your application. |
@@ -77,6 +78,7 @@ SecureBlackbox 2022 libraries for the corresponding edition are required to run 
 | [SFTP Client](./SecureBlackbox%20Samples/SFTP%20Client) | A small but powerful SFTP client built with the SFTPClient component. Directory browsing, uploads, and downloads are supported. |
 | [SFTP Server](./SecureBlackbox%20Samples/SFTP%20Server) | A powerful SFTP server created around the SFTPServer component. Most of SFTP operations are supported. |
 | [SMTP Client](./SecureBlackbox%20Samples/SMTP%20Client) | A small mail sender program based on the SMTPClient component. Just creates a plain text message and sends it to the specified SMTP server. |
+| [SOAP Client](./SecureBlackbox%20Samples/SOAP%20Client) | This small example illustrates the sending of SOAP messages with SOAPClient control. |
 | [SOAP Signer](./SecureBlackbox%20Samples/SOAP%20Signer) | This small example illustrates the signing of SOAP messages with SOAPSigner control. |
 | [SOAP Verifier](./SecureBlackbox%20Samples/SOAP%20Verifier) | Use this example to learn about SOAP signature validation with SOAPVerifier control. |
 | [Simple Authenticator](./SecureBlackbox%20Samples/Simple%20Authenticator) | A simple Authenticator created with the Authenticator component. Use it to user authentication. |
@@ -84,6 +86,8 @@ SecureBlackbox 2022 libraries for the corresponding edition are required to run 
 | [Symmetric Crypto](./SecureBlackbox%20Samples/Symmetric%20Crypto) | Use this example to learn about encrypt and decrypt with SymmetricCrypto control. |
 | [TLS Client](./SecureBlackbox%20Samples/TLS%20Client) | A simple TLS client sample. Use this demo together with its TLS Server counterpart. |
 | [TLS Server](./SecureBlackbox%20Samples/TLS%20Server) | A simple TLS server sample. Use this demo together with its TLS Client counterpart. |
+| [WebDAV Server](./SecureBlackbox%20Samples/WebDAV%20Server) | A simple webdav server sample. |
+| [WebSocket Server](./SecureBlackbox%20Samples/WebSocket%20Server) | This sample illustrates the interaction between a web page and a simple WebSocket server built around the WebSocketServer component. |
 | [XAdES Signer](./SecureBlackbox%20Samples/XAdES%20Signer) | Use this demo to learn how to create signed XAdES documents of various levels. |
 | [XAdES Verifier](./SecureBlackbox%20Samples/XAdES%20Verifier) | This small demo illustrates the use of XAdESVerifier for XAdES signature validations. |
 | [XML Decryptor](./SecureBlackbox%20Samples/XML%20Decryptor) | A tiny XML decryption example. |
