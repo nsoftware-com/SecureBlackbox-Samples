@@ -191,10 +191,6 @@ public class symmetriccrypto extends JDialog {
 		Cryptokeymanager keymanager = new Cryptokeymanager();
 
 		int KeyBits = 256;
-		if (crypto.getInputEncoding() == cetCompact || crypto.getInputEncoding() == cetJSON || crypto.getOutputEncoding() == cetCompact || crypto.getOutputEncoding() == cetJSON)
-		{
-			KeyBits = 512;
-		}
 
 		try {
 			keymanager.deriveKey(KeyBits, pass, ""); // derive 256-bit key

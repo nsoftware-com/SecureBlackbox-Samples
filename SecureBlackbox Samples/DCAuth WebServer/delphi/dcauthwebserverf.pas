@@ -403,7 +403,6 @@ begin
     // generated from the values contained in it.
     if Signer.SigningCertificate = nil then
     begin
-      Signer.Widget.AutoText := false;
       Signer.Widget.AlgorithmCaption := 'RSA';
       Signer.Widget.AlgorithmInfo := 'Strong Asymmetric Algorithm';
       Signer.Widget.Header := 'Good signature';

@@ -145,7 +145,7 @@ begin
     HTMLPage := ReadAllFile('index.html');
   except
     FServer.SetResponseStatus(ConnectionID, 404);
-    FServer.SetResponseString(ConnectionID, '404: index.html not found', 'text/plain');
+    FServer.SetResponseString(ConnectionID, '404: index.html not found', 'text/plain', '');
     Exit;
   end;
 
@@ -160,11 +160,10 @@ begin
   FSigner.ExternalCrypto.HashAlgorithm := 'SHA256';
   FSigner.ExternalCrypto.Data := InputFile;
 
-  FSigner.Signature.AuthorName := Author;
-  FSigner.Signature.Reason := Reason;
-  FSigner.Signature.AutoText := true;
-  FSigner.Signature.SignerCaption := 'SecureBlackbox Demo Certificate';
-  FSigner.Signature.AlgorithmCaption := 'RSA with SHA-256';
+  FSigner.NewSignature.AuthorName := Author;
+  FSigner.NewSignature.Reason := Reason;
+  FSigner.Widget.SignerCaption := 'SecureBlackbox Demo Certificate';
+  FSigner.Widget.AlgorithmCaption := 'RSA with SHA-256';
 
   State := FSigner.SignAsyncBegin;
   State := Base64Encode(State);
@@ -172,7 +171,7 @@ begin
   HTMLPage := StringReplace(HTMLPage, '${style}', '', [rfReplaceAll, rfIgnoreCase]);
   HTMLPage := StringReplace(HTMLPage, '${data}', State, [rfReplaceAll, rfIgnoreCase]);
 
-  FServer.SetResponseString(ConnectionID, HTMLPage, 'text/html');
+  FServer.SetResponseString(ConnectionID, HTMLPage, 'text/html', '');
 end;
 
 procedure TFormDcauth.FinishSigning(ConnectionID: Int64; const Reply: string);
@@ -203,12 +202,12 @@ begin
       HTMLPage := ReadAllFile('index.html');
     except
       FServer.SetResponseStatus(ConnectionID, 404);
-      FServer.SetResponseString(ConnectionID, '404: index.html not found', 'text/plain');
+      FServer.SetResponseString(ConnectionID, '404: index.html not found', 'text/plain', '');
       Exit;
     end;
 
     HTMLPage := StringReplace(HTMLPage, '${style}', 'display: none;', [rfReplaceAll, rfIgnoreCase]);
-    FServer.SetResponseString(ConnectionID, HTMLPage, 'text/html');
+    FServer.SetResponseString(ConnectionID, HTMLPage, 'text/html', '');
   end
   else
     FServer.SetResponseStatus(ConnectionID, 404);
@@ -222,21 +221,16 @@ begin
   Handled := true;
   IDStr := IntToStr(ConnectionID);
 
-  Request := FServer.GetRequestString(ConnectionID);
+  Request := FServer.GetRequestString(ConnectionID, '');
 
   FLogMsg := '[' + IntToStr(ConnectionID) + '] POST ' + URI + #13#10 + Request;
   TThread.Synchronize(TThread.CurrentThread, Log);
 
   if URI = '/start' then
   begin
-    FServer.Config('RequestFilter[' + IDStr + ']=Params[''author'']');
-    Author := FServer.GetRequestString(ConnectionID);
-
-    FServer.Config('RequestFilter[' + IDStr + ']=Params[''reason'']');
-    Reason := FServer.GetRequestString(ConnectionID);
-
-    FServer.Config('RequestFilter[' + IDStr + ']=Params[''inputFile'']');
-    InputFile := FServer.GetRequestString(ConnectionID);
+    Author := FServer.GetRequestString(ConnectionID, 'params[''author'']');
+    Reason := FServer.GetRequestString(ConnectionID, 'params[''reason'']');
+    InputFile := FServer.GetRequestString(ConnectionID, 'Params[''inputFile'']');
 
     StartSigning(ConnectionID, Author, Reason, InputFile);
   end

@@ -26,268 +26,286 @@ import secureblackbox.*;
 
 public class httpget extends JDialog {
 
-	private static final long serialVersionUID = 1L;
-	private JTextField edHost;
-	private JTextField edPath;
-	private JTextField edOutput;
-	private JComboBox<String> cmbProtocol;
-	private Httpclient client;
-	private JSpinner edPort;
-	private JTextArea mmLog;
+  private static final long serialVersionUID = 1L;
+  private JTextField edHost;
+  private JTextField edPath;
+  private JTextField edOutput;
+  private JComboBox<String> cmbProtocol;
+  private Httpclient client;
+  private JSpinner edPort;
+  private JTextArea mmLog;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					httpget dialog = new httpget();
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+  /**
+   * Launch the application.
+   */
+  public static void main(String[] args) {
+    EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        try {
+          httpget dialog = new httpget();
+          dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+          dialog.setVisible(true);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
+  }
 
-	/**
-	 * Create the dialog.
-	 */
-	public httpget() {
-		setTitle("HTTP Get");
-		setBounds(100, 100, 460, 400);
-		getContentPane().setLayout(null);
+  /**
+   * Create the dialog.
+   */
+  public httpget() {
+    setTitle("HTTP Get");
+    setBounds(100, 100, 460, 400);
+    getContentPane().setLayout(null);
 
-		JLabel lblCaption = new JLabel("This sample illustrates the ways of making GET requests with HTTPClient.");
-		lblCaption.setBounds(10, 5, 450, 14);
-		lblCaption.setForeground(new Color(49, 106, 197));
-		getContentPane().add(lblCaption);
+    JLabel lblCaption = new JLabel("This sample illustrates the ways of making GET requests with HTTPClient.");
+    lblCaption.setBounds(10, 5, 450, 14);
+    lblCaption.setForeground(new Color(49, 106, 197));
+    getContentPane().add(lblCaption);
 
-		JPanel Settingspanel = new JPanel();
-		Settingspanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Http options  ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		Settingspanel.setBounds(5, 30, 435, 150);
-		getContentPane().add(Settingspanel);
-		Settingspanel.setLayout(null);
+    JPanel Settingspanel = new JPanel();
+    Settingspanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Http options  ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+    Settingspanel.setBounds(5, 30, 435, 150);
+    getContentPane().add(Settingspanel);
+    Settingspanel.setLayout(null);
 
-		JLabel lblProtocol = new JLabel("Protocol");
-		lblProtocol.setBounds(10, 28, 61, 14);
-		Settingspanel.add(lblProtocol);
+    JLabel lblProtocol = new JLabel("Protocol");
+    lblProtocol.setBounds(10, 28, 61, 14);
+    Settingspanel.add(lblProtocol);
 
-		cmbProtocol = new JComboBox<String>();
-		cmbProtocol.setModel(new DefaultComboBoxModel<String>(new String[] {"HTTP", "HTTPS"}));
-		cmbProtocol.setBounds(70, 25, 77, 22);
-		Settingspanel.add(cmbProtocol);
+    cmbProtocol = new JComboBox<String>();
+    cmbProtocol.setModel(new DefaultComboBoxModel<String>(new String[] {"HTTP", "HTTPS"}));
+    cmbProtocol.setBounds(70, 25, 77, 22);
+    Settingspanel.add(cmbProtocol);
 
-		JLabel lblHost = new JLabel("Host");
-		lblHost.setBounds(10, 58, 61, 14);
-		Settingspanel.add(lblHost);
+    JLabel lblHost = new JLabel("Host");
+    lblHost.setBounds(10, 58, 61, 14);
+    Settingspanel.add(lblHost);
 
-		edHost = new JTextField();
-		edHost.setText("www.secureblackbox.com");
-		edHost.setBounds(70, 55, 159, 20);
-		Settingspanel.add(edHost);
-		edHost.setColumns(10);
+    edHost = new JTextField();
+    edHost.setText("www.secureblackbox.com");
+    edHost.setBounds(70, 55, 159, 20);
+    Settingspanel.add(edHost);
+    edHost.setColumns(10);
 
-		JLabel lblPort = new JLabel("Port");
-		lblPort.setBounds(270, 58, 37, 14);
-		Settingspanel.add(lblPort);
+    JLabel lblPort = new JLabel("Port");
+    lblPort.setBounds(270, 58, 37, 14);
+    Settingspanel.add(lblPort);
 
-		edPort = new JSpinner();
-		edPort.setModel(new SpinnerNumberModel(new Integer(80), null, null, new Integer(1)));
-		edPort.setBounds(305, 55, 51, 20);
-		Settingspanel.add(edPort);
+    edPort = new JSpinner();
+    edPort.setModel(new SpinnerNumberModel(new Integer(80), null, null, new Integer(1)));
+    edPort.setBounds(305, 55, 51, 20);
+    Settingspanel.add(edPort);
 
-		JLabel lblPath = new JLabel("Path");
-		lblPath.setBounds(10, 88, 61, 14);
-		Settingspanel.add(lblPath);
+    JLabel lblPath = new JLabel("Path");
+    lblPath.setBounds(10, 88, 61, 14);
+    Settingspanel.add(lblPath);
 
-		edPath = new JTextField();
-		edPath.setText("/");
-		edPath.setBounds(70, 85, 270, 20);
-		Settingspanel.add(edPath);
-		edPath.setColumns(10);
+    edPath = new JTextField();
+    edPath.setText("/");
+    edPath.setBounds(70, 85, 270, 20);
+    Settingspanel.add(edPath);
+    edPath.setColumns(10);
 
-		JLabel lblSaveTo = new JLabel("Save to");
-		lblSaveTo.setBounds(10, 118, 61, 14);
-		Settingspanel.add(lblSaveTo);
+    JLabel lblSaveTo = new JLabel("Save to");
+    lblSaveTo.setBounds(10, 118, 61, 14);
+    Settingspanel.add(lblSaveTo);
 
-		edOutput = new JTextField();
-		edOutput.setBounds(70, 115, 270, 20);
-		Settingspanel.add(edOutput);
-		edOutput.setColumns(10);
+    edOutput = new JTextField();
+    edOutput.setBounds(70, 115, 270, 20);
+    Settingspanel.add(edOutput);
+    edOutput.setColumns(10);
 
-		JButton btnBrowse = new JButton("Browse");
-		btnBrowse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				edOutput.setText(getSaveFileName());
-			}
-		});
-		btnBrowse.setBounds(345, 113, 80, 25);
-		Settingspanel.add(btnBrowse);
+    JButton btnBrowse = new JButton("Browse");
+    btnBrowse.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        edOutput.setText(getSaveFileName());
+      }
+    });
+    btnBrowse.setBounds(345, 113, 80, 25);
+    Settingspanel.add(btnBrowse);
 
-		JButton btnRetrieve = new JButton("Get");
-		btnRetrieve.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				retrieveClick();
-			}
-		});
-		btnRetrieve.setBounds(358, 185, 80, 25);
-		getContentPane().add(btnRetrieve);
+    JButton btnRetrieve = new JButton("Get");
+    btnRetrieve.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        retrieveClick();
+      }
+    });
+    btnRetrieve.setBounds(358, 185, 80, 25);
+    getContentPane().add(btnRetrieve);
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(5, 220, 435, 135);
-		getContentPane().add(scrollPane);
+    JScrollPane scrollPane = new JScrollPane();
+    scrollPane.setBounds(5, 220, 435, 135);
+    getContentPane().add(scrollPane);
 
-		mmLog = new JTextArea();
-		scrollPane.setViewportView(mmLog);
+    mmLog = new JTextArea();
+    scrollPane.setViewportView(mmLog);
 
-		init();
-	}
+    init();
+  }
 
-	private void init() {
-		client = new Httpclient();
-		try
-		{
-			client.getTLSSettings().setAutoValidateCertificates(false);
-		}
-		catch (SecureBlackboxException ex)
-		{
+  private void init() {
+    client = new Httpclient();
+    try
+    {
+      client.getTLSSettings().setAutoValidateCertificates(false);
+    }
+    catch (SecureBlackboxException ex)
+    {
 
-		}
-		initEvents();
-	}
+    }
+    initEvents();
+  }
 
-	private void initEvents() {
-		try {
-			client.addHttpclientEventListener(new HttpclientEventListener() {
-				
-				@Override
-				public void supercoreIntercept(HttpclientSupercoreInterceptEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void redirection(HttpclientRedirectionEvent e) {
-					mmLog.append("\nRedirected to " + e.newURL + "\n");
-					e.newURL = e.newURL; // can be changed here
-					e.allowRedirection = true;
-				}
-				
-				@Override
-				public void progress(HttpclientProgressEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void headersReceived(HttpclientHeadersReceivedEvent e) {
-					mmLog.append("\nReceived headers: \n");
-					StringNameValuePair element;
-					for (int i = 0; i < client.getResponseHeaders().size(); i++) {
-						element = client.getResponseHeaders().item(i);
-						mmLog.append(element.getName() + ": " + element.getValue() + "\n");
-					}
-				}
-				
-				@Override
-				public void headersPrepared(HttpclientHeadersPreparedEvent e) {
-					mmLog.append("\nSending headers: \n");
-					StringNameValuePair element;
-					for (int i = 0; i < client.getRequestHeaders().size(); i++) {
-						element = client.getRequestHeaders().item(i);
-						mmLog.append(element.getName() + ": " + element.getValue() + "\n");
-					}
-				}
-				
-				@Override
-				public void externalSign(HttpclientExternalSignEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void error(HttpclientErrorEvent e) {
-					mmLog.append(e.errorCode + ": " + e.description + "\n");
-				}
-			
-				@Override
-				public void notification(HttpclientNotificationEvent e) {
-					// TODO Auto-generated method stub
-				}
-				
-				@Override
-				public void dynamicDataNeeded(HttpclientDynamicDataNeededEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void documentEnd(HttpclientDocumentEndEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void documentBegin(HttpclientDocumentBeginEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void cookie(HttpclientCookieEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void certificateValidate(HttpclientCertificateValidateEvent e) {
-					e.accept = true;
-				}
-			});
-		}
-		catch (TooManyListenersException ex)
-		{
+  private void initEvents() {
+    try {
+      client.addHttpclientEventListener(new HttpclientEventListener() {
+        
+        @Override
+        public void cookie(HttpclientCookieEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void documentBegin(HttpclientDocumentBeginEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void documentEnd(HttpclientDocumentEndEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void dynamicDataNeeded(HttpclientDynamicDataNeededEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void error(HttpclientErrorEvent e) {
+          mmLog.append(e.errorCode + ": " + e.description + "\n");
+        }
+        
+        @Override
+        public void externalSign(HttpclientExternalSignEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void headersPrepared(HttpclientHeadersPreparedEvent e) {
+          mmLog.append("\nSending headers: \n");
+          StringNameValuePair element;
+          for (int i = 0; i < client.getRequestHeaders().size(); i++) {
+            element = client.getRequestHeaders().item(i);
+            mmLog.append(element.getName() + ": " + element.getValue() + "\n");
+          }
+        }
+        
+        @Override
+        public void headersReceived(HttpclientHeadersReceivedEvent e) {
+          mmLog.append("\nReceived headers: \n");
+          StringNameValuePair element;
+          for (int i = 0; i < client.getResponseHeaders().size(); i++) {
+            element = client.getResponseHeaders().item(i);
+            mmLog.append(element.getName() + ": " + element.getValue() + "\n");
+          }
+        }
+        
+        @Override
+        public void notification(HttpclientNotificationEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void progress(HttpclientProgressEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void redirection(HttpclientRedirectionEvent e) {
+          mmLog.append("\nRedirected to " + e.newURL + "\n");
+          e.newURL = e.newURL; // can be changed here
+          e.allowRedirection = true;
+        }
 
-		}
-	}
+        @Override
+        public void TLSCertNeeded(HttpclientTLSCertNeededEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void TLSCertValidate(HttpclientTLSCertValidateEvent e) {
+          e.accept = true;
+        }
 
-	private void showErrorMessage(String msg) {
-		JOptionPane.showMessageDialog(null, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
-	}
+        @Override
+        public void TLSEstablished(HttpclientTLSEstablishedEvent e) {
+          // TODO Auto-generated method stub
+        }
 
-	String getSaveFileName(){
-		JFileChooser fc = new JFileChooser();
-		int returnVal = fc.showSaveDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION)
-			return fc.getSelectedFile().getPath();
+        @Override
+        public void TLSHandshake(HttpclientTLSHandshakeEvent e) {
+          // TODO Auto-generated method stub
+        }
 
-		return "";
-	}
+        @Override
+        public void TLSPSK(HttpclientTLSPSKEvent e) {
+          // TODO Auto-generated method stub
+        }
 
-	protected void retrieveClick() {
-		String URL = cmbProtocol.getSelectedItem().toString().toLowerCase() + "://" + edHost.getText() + ":" + edPort.getValue().toString() + edPath.getText();
+        @Override
+        public void TLSShutdown(HttpclientTLSShutdownEvent e) {
+          // TODO Auto-generated method stub
+        }
+        
+        @Override
+        public void supercoreIntercept(HttpclientSupercoreInterceptEvent e) {
+          // TODO Auto-generated method stub
+        }
+      });
+    }
+    catch (TooManyListenersException ex)
+    {
 
-		try
-		{
-			if (edOutput.getText().length() > 0)
-			{
-				client.getFile(URL, edOutput.getText());
-			}
-			else
-			{
-				client.get(URL);
-			}
+    }
+  }
 
-			mmLog.append(client.getOutputString());
-		}
-		catch (Exception E)
-		{
-			showErrorMessage("Exception happened during HTTP download: " + E.getMessage());
-		}
-	}
+  private void showErrorMessage(String msg) {
+    JOptionPane.showMessageDialog(null, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
+  }
+
+  String getSaveFileName(){
+    JFileChooser fc = new JFileChooser();
+    int returnVal = fc.showSaveDialog(this);
+    if (returnVal == JFileChooser.APPROVE_OPTION)
+      return fc.getSelectedFile().getPath();
+
+    return "";
+  }
+
+  protected void retrieveClick() {
+    String URL = cmbProtocol.getSelectedItem().toString().toLowerCase() + "://" + edHost.getText() + ":" + edPort.getValue().toString() + edPath.getText();
+
+    try
+    {
+      if (edOutput.getText().length() > 0)
+      {
+        client.getFile(URL, edOutput.getText());
+      }
+      else
+      {
+        client.get(URL);
+      }
+
+      mmLog.append(client.getOutputString());
+    }
+    catch (Exception E)
+    {
+      showErrorMessage("Exception happened during HTTP download: " + E.getMessage());
+    }
+  }
 }
 
 

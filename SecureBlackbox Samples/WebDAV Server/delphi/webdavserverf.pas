@@ -21,7 +21,7 @@ uses
   SBxTypes, SBxWebDAVServer, sbxCertificateManager;
 
 type
-  TfmMain = class(TForm)
+  TFormWebdavserver = class(TForm)
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -68,7 +68,7 @@ type
   end;
 
 var
-  fmMain: TfmMain;
+  FormWebdavserver: TFormWebdavserver;
 
 implementation
 
@@ -76,21 +76,21 @@ implementation
 
 uses addnewuserf;
 
-procedure TfmMain.DoAccept(Sender: TObject; const RemoteAddress: String;
+procedure TFormWebdavserver.DoAccept(Sender: TObject; const RemoteAddress: String;
   RemotePort: Integer; var Accept: Boolean);
 begin
   mmLog.Lines.Add('New connection from ' + RemoteAddress);
   Accept := true;
 end;
 
-procedure TfmMain.DoBeforeRequest(Sender: TObject; ConnectionID: Int64;
+procedure TFormWebdavserver.DoBeforeRequest(Sender: TObject; ConnectionID: Int64;
   const HTTPMethod: String; const URL: String; var Accept: Boolean);
 begin
   mmLog.Lines.Add('[' + IntToStr(ConnectionID) + '] ' + HTTPMethod + ' ' + URL);
   Accept := true;
 end;
 
-procedure TfmMain.bbStartClick(Sender: TObject);
+procedure TFormWebdavserver.bbStartClick(Sender: TObject);
 var
   mgr: TsbxCertificateManager;
   Port, i: integer;
@@ -165,7 +165,7 @@ begin
   bbStop.Enabled := true;
 end;
 
-procedure TfmMain.bbStopClick(Sender: TObject);
+procedure TFormWebdavserver.bbStopClick(Sender: TObject);
 begin
   if FServer.Active then
   begin
@@ -176,49 +176,49 @@ begin
   end;
 end;
 
-procedure TfmMain.FormCreate(Sender: TObject);
+procedure TFormWebdavserver.FormCreate(Sender: TObject);
 begin
   FServer := TsbxWebDAVServer.Create(nil);
 end;
 
-procedure TfmMain.FormDestroy(Sender: TObject);
+procedure TFormWebdavserver.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FServer);
 end;
 
-procedure TfmMain.sbChooseCertClick(Sender: TObject);
+procedure TFormWebdavserver.sbChooseCertClick(Sender: TObject);
 begin
   if OpenFileDlg.Execute then
     edCertFile.Text := OpenFileDlg.FileName;
 end;
 
-procedure TfmMain.sbChooseFileDirClick(Sender: TObject);
+procedure TFormWebdavserver.sbChooseFileDirClick(Sender: TObject);
 begin
   if FolderOpenDlg.Execute then
     edFileDir.Text := FolderOpenDlg.FileName;
 end;
 
-procedure TfmMain.sbChooseMetaDirClick(Sender: TObject);
+procedure TFormWebdavserver.sbChooseMetaDirClick(Sender: TObject);
 begin
   if FolderOpenDlg.Execute then
     edMetaDir.Text := FolderOpenDlg.FileName;
 end;
 
-procedure TfmMain.sbUserAddClick(Sender: TObject);
+procedure TFormWebdavserver.sbUserAddClick(Sender: TObject);
 var
   Li: TListItem;
 begin
-  if (fmAddNewUser.ShowModal = mrOK) and
-    (fmAddNewUser.edLogin.Text <> '') and
-    (fmAddNewUser.edPassword.Text <> '') then
+  if (FormAddnewuser.ShowModal = mrOK) and
+    (FormAddnewuser.edLogin.Text <> '') and
+    (FormAddnewuser.edPassword.Text <> '') then
   begin
     Li := lvUsers.Items.Add;
-    Li.Caption := fmAddNewUser.edLogin.Text;
-    Li.SubItems.Add(fmAddNewUser.edPassword.Text);
+    Li.Caption := FormAddnewuser.edLogin.Text;
+    Li.SubItems.Add(FormAddnewuser.edPassword.Text);
   end;
 end;
 
-procedure TfmMain.sbUserDeleteClick(Sender: TObject);
+procedure TFormWebdavserver.sbUserDeleteClick(Sender: TObject);
 begin
   if lvUsers.ItemIndex >= 0 then
     lvUsers.Items.Delete(lvUsers.ItemIndex);

@@ -83,7 +83,7 @@ struct ContentView: View {
             
             do {
                 // key from password
-                try keymanager.deriveKey(keyBits: 512, password: password, salt: "")
+                try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                 let IV = Data.init(count: 16)
                 keymanager.key.iv = IV
                 crypto.key = keymanager.key
@@ -124,7 +124,7 @@ struct ContentView: View {
                 
                 do {
                     // key from password
-                    try keymanager.deriveKey(keyBits: 512, password: password, salt: "")
+                    try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                     let IV = Data.init(count: 16)
                     keymanager.key.iv = IV
                     crypto.key = keymanager.key

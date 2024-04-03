@@ -92,12 +92,12 @@ begin
 
   if (URI = '/') or (URI = '/index.html') then
   begin
-    Content := ReadFileAsString('..\\..\\index.html');
+    Content := ReadFileAsString('index.html');
     ContentType := 'text/html';
   end
   else if URI = '/client.js' then
   begin
-    Content := ReadFileAsString('..\\..\\client.js');
+    Content := ReadFileAsString('client.js');
     ContentType := 'text/javascript';
   end
   else
@@ -107,7 +107,7 @@ begin
     FServer.SetResponseStatus(ConnectionId, 404);
   end;
 
-  FServer.SetResponseString(ConnectionId, Content, ContentType);
+  FServer.SetResponseString(ConnectionId, Content, ContentType, '');
 end;
 
 procedure TFormWebsocketserver.DoTextData(Sender: TObject; ConnectionID: Int64; const Text: String; Last: Boolean);
@@ -127,10 +127,9 @@ begin
   if TryStrToInt(edPort.Text, Port) then
     FServer.Port := Port;
 
-  FServer.UseTLS := cbUseTLS.Checked;
-
   if cbUseTLS.Checked then
   begin
+    FServer.TLSSettings.TLSMode := TsbxWebSocketServerTLSTLSModes.smImplicitTLS;
     CertificateManager := TsbxCertificateManager.Create(nil);
     try
       try
@@ -152,7 +151,10 @@ begin
 
   FServer.Start;
 
-  ShellExecute(0, 'open', PChar('http://localhost:' + edPort.Text), nil, nil, SW_SHOWNORMAL);
+  if cbUseTLS.Checked then
+    ShellExecute(0, 'open', PChar('https://localhost:' + edPort.Text), nil, nil, SW_SHOWNORMAL)
+  else
+    ShellExecute(0, 'open', PChar('http://localhost:' + edPort.Text), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TFormWebsocketserver.bbStopClick(Sender: TObject);

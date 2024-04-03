@@ -1012,7 +1012,6 @@ public class dcauthwebserver extends ConsoleDemo
 			// generated from the values contained in it.
 			if (signer.getSigningCertificate() == null)
 			{
-				signer.getSignature().setAutoText(false);
 				signer.getSignature().setAlgorithmCaption("RSA");
 				signer.getSignature().setAlgorithmInfo("Strong Asymmetric Algorithm");
 				signer.getSignature().setHeader("Good signature");

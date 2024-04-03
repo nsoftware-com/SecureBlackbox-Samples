@@ -146,7 +146,6 @@ td:last-child { width: 100%; }
         // generated from the values contained in it.
         if ($signer->getSigningCertHandle() == 0)
         {
-          $signer->setSigAutoText(false);
           $signer->setSigAlgorithmCaption("RSA");
           $signer->setSigAlgorithmInfo("Strong Asymmetric Algorithm");
           $signer->setSigHeader("Good signature");
@@ -492,14 +491,14 @@ questions, please visit <a href="http://www.nsoftware.com/?demopg-SBPHA" target=
 contact our technical <a href="http://www.nsoftware.com/support/">support</a>.
 <br/>
 <br/>
-Copyright (c) 2023 /n software inc.
+Copyright (c) 2024 /n software inc.
 <br/>
 <br/>
 </div>
 
 <div id="footer">
 <center>
-SecureBlackbox 2022 - Copyright (c) 2023 /n software inc. - For more information, please visit our website at <a href="http://www.nsoftware.com/?demopg-SBPHA" target="_blank">www.nsoftware.com</a>.
+SecureBlackbox 2022 - Copyright (c) 2024 /n software inc. - For more information, please visit our website at <a href="http://www.nsoftware.com/?demopg-SBPHA" target="_blank">www.nsoftware.com</a>.
 </center>
 </div>
 

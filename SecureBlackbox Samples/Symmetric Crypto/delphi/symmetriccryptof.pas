@@ -57,10 +57,7 @@ var
 begin
   KeyManager := TSBxCryptoKeyManager.Create(nil);
   try
-    if (Crypto.InputEncoding in [cetCompact, cetJSON]) or (Crypto.OutputEncoding in [cetCompact, cetJSON]) then
-      KeyBits := 512
-    else
-      KeyBits := 256;
+    KeyBits := 256;
 
     KeyManager.DeriveKey(KeyBits, Pass, ''); // derive 256-bit key from password
 

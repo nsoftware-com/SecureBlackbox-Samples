@@ -1,4 +1,4 @@
-object fmMain: TfmMain
+object FormWebdavserver: TFormWebdavserver
   Left = 0
   Top = 0
   Caption = 'SecureBlackbox WebDAV Server Demo'

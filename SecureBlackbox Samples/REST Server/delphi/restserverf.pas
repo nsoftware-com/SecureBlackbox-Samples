@@ -167,7 +167,7 @@ begin
     FServer.SetResponseStatus(ConnectionId, 404);
   end;
 
-  FServer.SetResponseString(ConnectionId, Content, ContentType);
+  FServer.SetResponseString(ConnectionId, Content, ContentType, '');
 end;
 
 function DeleteCompare(List: TStringList; Index1, Index2: integer) : integer;
@@ -196,7 +196,7 @@ var
   SL, SubSL, ToDelete: TStringList;
   i: integer;
 begin
-  Req := FServer.GetRequestString(ConnectionId);
+  Req := FServer.GetRequestString(ConnectionId, '');
 
   if URI = '/items/delete' then
   begin
@@ -261,7 +261,7 @@ begin
   // simplify here to eliminate JSON parsing in Delphi
   if URI = '/items/add' then
   begin
-    Req := FServer.GetRequestString(ConnectionId);
+    Req := FServer.GetRequestString(ConnectionId, '');
     FItems.Add(Req);
 
     FServer.SetResponseStatus(ConnectionId, 200);
@@ -280,10 +280,9 @@ begin
   if TryStrToInt(edPort.Text, Port) then
     FServer.Port := Port;
 
-  FServer.UseTLS := cbUseTLS.Checked;
-
   if cbUseTLS.Checked then
   begin
+    FServer.TLSSettings.TLSMode := TsbxRESTServerTLSTLSModes.smImplicitTLS;
     CertificateManager := TsbxCertificateManager.Create(nil);
     try
       try

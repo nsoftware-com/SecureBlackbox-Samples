@@ -76,7 +76,7 @@ public class jwencryption extends ConsoleDemo {
 
 				// genarate key from password
 				Cryptokeymanager keymanager = new Cryptokeymanager();
-				keymanager.deriveKey(512, pass, "");
+				keymanager.deriveKey(256, pass, "");
 				keymanager.getKey().setIV(new byte[16]);
 				crypto.setKey(keymanager.getKey());
 

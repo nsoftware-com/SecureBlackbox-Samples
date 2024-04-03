@@ -1,4 +1,4 @@
-object FormPdfsigner: TFormPdfsigner
+object FormPdfsignerpkiproxy: TFormPdfsignerpkiproxy
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]

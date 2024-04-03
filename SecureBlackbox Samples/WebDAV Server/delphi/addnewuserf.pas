@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
 
 type
-  TfmAddNewUser = class(TForm)
+  TFormAddnewuser = class(TForm)
     Label1: TLabel;
     edLogin: TEdit;
     Label2: TLabel;
@@ -21,7 +21,7 @@ type
   end;
 
 var
-  fmAddNewUser: TfmAddNewUser;
+  FormAddnewuser: TFormAddnewuser;
 
 implementation
 

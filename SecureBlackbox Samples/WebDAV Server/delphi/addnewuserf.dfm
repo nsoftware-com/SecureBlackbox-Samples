@@ -1,4 +1,4 @@
-object fmAddNewUser: TfmAddNewUser
+object FormAddnewuser: TFormAddnewuser
   Left = 0
   Top = 0
   BorderStyle = bsDialog

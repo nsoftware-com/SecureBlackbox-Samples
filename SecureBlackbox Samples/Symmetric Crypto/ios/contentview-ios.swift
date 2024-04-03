@@ -135,7 +135,7 @@ struct ContentView: View {
                 if ((crypto.outputEncoding == SymmetriccryptoOutputEncodings.cetBinary) || (crypto.outputEncoding == SymmetriccryptoOutputEncodings.cetBase64)) {
                     try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                 } else {
-                    try keymanager.deriveKey(keyBits: 512, password: password, salt: "")
+                    try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                 }
                             
                 let IV = Data.init(count: 16)
@@ -186,7 +186,7 @@ struct ContentView: View {
                 if ((crypto.inputEncoding == SymmetriccryptoInputEncodings.cetBinary) || (crypto.inputEncoding == SymmetriccryptoInputEncodings.cetBase64)) {
                     try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                 } else {
-                    try keymanager.deriveKey(keyBits: 512, password: password, salt: "")
+                    try keymanager.deriveKey(keyBits: 256, password: password, salt: "")
                 }
                                 
                 let IV = Data.init(count: 16)

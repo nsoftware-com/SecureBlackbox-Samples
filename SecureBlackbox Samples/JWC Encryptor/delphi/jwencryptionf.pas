@@ -55,7 +55,7 @@ var
 begin
   KeyManager := TSBxCryptoKeyManager.Create(nil);
   try
-    KeyManager.DeriveKey(512, Pass, '');
+    KeyManager.DeriveKey(256, Pass, '');
 
     SetLength(IV, 16);
     FillChar(IV[0], Length(IV), 0);

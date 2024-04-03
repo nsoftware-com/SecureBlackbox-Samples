@@ -122,7 +122,7 @@ begin
     pgpReader.InputFile := strInputFilename;
     pgpReader.OutputFile := strOutputFilename;
 
-    pgpReader.DecryptAndVerify(); pgpReader.DecryptAndVerifyFile(strInputFilename, strOutputFilename);
+    pgpReader.DecryptAndVerify();
 
     ShowSignatures;
 

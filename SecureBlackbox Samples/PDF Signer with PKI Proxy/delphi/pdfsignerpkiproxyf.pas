@@ -21,7 +21,7 @@ uses
   SBxTypes, SBxCore, SBxCertificateStorage, SBxCertificateManager, SBxPDFSigner;
 
 type
-  TFormPdfsigner = class(TForm)
+  TFormPdfsignerpkiproxy = class(TForm)
     Label10: TLabel;
     lbInputFile: TLabel;
     sbBrowseInputFile: TSpeedButton;
@@ -59,7 +59,7 @@ type
   end;
 
 var
-  FormPdfsigner: TFormPdfsigner;
+  FormPdfsignerpkiproxy: TFormPdfsignerpkiproxy;
 
 implementation
 
@@ -75,7 +75,7 @@ begin
     Result := Result + IntToHex(Buffer[i], 1);
 end;
 
-procedure TFormPdfsigner.btnSignClick(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.btnSignClick(Sender: TObject);
 var
   CertificateManager: TsbxCertificateManager;
 begin
@@ -118,39 +118,39 @@ begin
   end;
 end;
 
-procedure TFormPdfsigner.FormCreate(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.FormCreate(Sender: TObject);
 begin
   FSigner := TsbxPDFSigner.Create(nil);
   FCertStorage := TsbxCertificateStorage.Create(nil);
 end;
 
-procedure TFormPdfsigner.FormDestroy(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FCertStorage);
   FreeAndNil(FSigner);
 end;
 
-procedure TFormPdfsigner.sbBrowseInputFileClick(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.sbBrowseInputFileClick(Sender: TObject);
 begin
   //dlgOpen.FileName := edInputFile.Text;
   if dlgOpen.Execute then
     edInputFile.Text := dlgOpen.FileName;
 end;
 
-procedure TFormPdfsigner.sbOutputFileClick(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.sbOutputFileClick(Sender: TObject);
 begin
   dlgSave.InitialDir := ExtractFilePath(Application.ExeName);
   if dlgSave.Execute then
     edOutputFile.Text := dlgSave.FileName;
 end;
 
-procedure TFormPdfsigner.btnLoadCertsClick(Sender: TObject);
+procedure TFormPdfsignerpkiproxy.btnLoadCertsClick(Sender: TObject);
 begin
   if dlgOpenDLL.Execute then
     LoadCertificates(dlgOpenDLL.FileName);
 end;
 
-procedure TFormPdfsigner.CloseStorage();
+procedure TFormPdfsignerpkiproxy.CloseStorage();
 begin
   if FCertStorage.Opened then
   begin
@@ -163,7 +163,7 @@ begin
   lvCerts.Items.Clear;
 end;
 
-procedure TFormPdfsigner.LoadCertificates(const StoreFilename: string);
+procedure TFormPdfsignerpkiproxy.LoadCertificates(const StoreFilename: string);
 var
   i, SlotCount, slotNum: integer;
   SlotList: TStringList;
