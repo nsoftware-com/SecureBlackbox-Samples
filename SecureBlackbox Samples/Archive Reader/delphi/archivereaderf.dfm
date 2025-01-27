@@ -28,7 +28,7 @@ object FormArchiveReader: TFormArchiveReader
     BevelOuter = bvNone
     Columns = <
       item
-        Caption = 'File name'
+        Caption = 'Name'
         Width = 130
       end
       item
@@ -40,7 +40,7 @@ object FormArchiveReader: TFormArchiveReader
         Width = 70
       end
       item
-        Caption = 'Modify time'
+        Caption = 'Mod Time'
         Width = 70
       end
       item
@@ -128,7 +128,7 @@ object FormArchiveReader: TFormArchiveReader
       Top = 15
       Width = 255
       Height = 13
-      Caption = 'This sample shows how to work with existing archive.'
+      Caption = 'This sample shows how to work with existing archives.'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clHighlight
       Font.Height = -11
@@ -143,7 +143,7 @@ object FormArchiveReader: TFormArchiveReader
     object mniFile: TMenuItem
       Caption = 'File'
       object mniOpenArchive: TMenuItem
-        Caption = 'Open archive..'
+        Caption = 'Open archive...'
         OnClick = mniOpenArchiveClick
       end
       object mniCloseArchive: TMenuItem
@@ -313,16 +313,16 @@ object FormArchiveReader: TFormArchiveReader
       OnClick = miflExtractToClick
     end
     object miflExtractAll: TMenuItem
-      Caption = 'Extract All'
+      Caption = 'Extract all'
       OnClick = miflExtractAllClick
     end
     object miflExtractAllTo: TMenuItem
-      Caption = 'Extract All to..'
+      Caption = 'Extract all to..'
       OnClick = miflExtractAllToClick
     end
   end
   object sdChooseDirectory: TSaveDialog
-    Title = 'Select directory for extracted files:'
+    Title = 'Select a directory for the extracted files:'
     Left = 368
     Top = 80
   end

@@ -90,6 +90,7 @@ SecureBlackbox 2024 libraries for the corresponding edition are required to run 
 | [TLS Server](./SecureBlackbox%20Samples/TLS%20Server) | A simple TLS server sample. Use this demo together with its TLS Client counterpart. |
 | [User Manager](./SecureBlackbox%20Samples/User%20Manager) | A simple User Manager to save user's information and passwords. |
 | [WebDAV Server](./SecureBlackbox%20Samples/WebDAV%20Server) | A simple webdav server sample. |
+| [WebSocket Client](./SecureBlackbox%20Samples/WebSocket%20Client) | This sample illustrates the basic use of WebSocketClient component. Use together with the WebSocket Server demo. |
 | [WebSocket Server](./SecureBlackbox%20Samples/WebSocket%20Server) | This sample illustrates the interaction between a web page and a simple WebSocket server built around the WebSocketServer component. |
 | [XAdES Signer](./SecureBlackbox%20Samples/XAdES%20Signer) | Use this demo to learn how to create signed XAdES documents of various levels. |
 | [XAdES Verifier](./SecureBlackbox%20Samples/XAdES%20Verifier) | This small demo illustrates the use of XAdESVerifier for XAdES signature validations. |

@@ -28,6 +28,7 @@ object FormSamlidpserver: TFormSamlidpserver
     Top = 408
     Width = 588
     Height = 108
+    ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 0
   end
@@ -164,7 +165,7 @@ object FormSamlidpserver: TFormSamlidpserver
         Width = 254
         Height = 21
         TabOrder = 0
-        Text = 'http://idp.test.org:64080'
+        Text = 'http://127.0.0.1:64080'
       end
       object GroupBox1: TGroupBox
         Left = 16
@@ -748,14 +749,6 @@ object FormSamlidpserver: TFormSamlidpserver
         ScrollBars = ssVertical
         TabOrder = 3
       end
-      object cbExternalServerMode: TCheckBox
-        Left = 11
-        Top = 260
-        Width = 137
-        Height = 17
-        Caption = 'External Server Mode'
-        TabOrder = 4
-      end
     end
     object TabSheet6: TTabSheet
       Caption = 'Active Sessions'
@@ -768,8 +761,12 @@ object FormSamlidpserver: TFormSamlidpserver
         Align = alClient
         Columns = <
           item
-            Caption = 'User name'
+            Caption = 'Session ID'
             Width = 160
+          end
+          item
+            Caption = 'Status'
+            Width = 400
           end>
         ReadOnly = True
         RowSelect = True

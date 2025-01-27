@@ -76,7 +76,7 @@ object FormCertificate: TFormCertificate
     OnClick = btnCancelClick
   end
   object odOpenCertificate: TOpenDialog
-    Filter = 'PFX Certificates (*.pfx)|*.pfx'
+    Filter = 'PFX certificates (*.pfx)|*.pfx'
     Left = 8
     Top = 64
   end

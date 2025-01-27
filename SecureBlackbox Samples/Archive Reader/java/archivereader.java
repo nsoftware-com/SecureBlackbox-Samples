@@ -41,8 +41,8 @@ public class archivereader extends ConsoleDemo {
                         "SYNOPSIS\n" +
                         "  archivereader <-arctype archive_type> <-input input_file> [-output output_path] [-pass decryption_password]\n\n" +
                         "DESCRIPTION\n" +
-                        "  ArchiveReader demonstrates the usage of ArchiveReader from SecureBlackbox.\n" +
-                        "  Used to extract files from archive.\n\n" +
+                        "  ArchiveReader demonstrates the use of ArchiveReader from SecureBlackbox.\n" +
+                        "  Use this component to extract files from existing archives.\n\n" +
                         "  The options are as follows:\n\n" +
                         "  -arctype      The type of archive (Required). Valid values:\n\n" +
                         "                  1 - AFT_ZIP\n" +
@@ -52,8 +52,8 @@ public class archivereader extends ConsoleDemo {
                         "                  5 - AFT_TAR_GZIP\n" +
                         "                  6 - AFT_TAR_BZIP_2\n\n" +
                         "  -input        An input archive file (Required).\n\n" +
-                        "  -output       Where the extracted files will be saved.\n\n" +
-                        "  -pass         The password for the encrypted archive.\n\n" +
+                        "  -output       The directory to save extracted files to.\n\n" +
+                        "  -pass         A password to decrypt the encrypted archive.\n\n" +
                         "EXAMPLES\n" +
                         "  archivereader -arctype 1 -input C:\\archive\\helloworld.zip -output C:\\archive \n\n" +
                         "  archivereader -arctype 5 -input C:\\archive\\helloworld.tar -pass mypassword \n"
@@ -108,7 +108,7 @@ public class archivereader extends ConsoleDemo {
 
             archive.open(arctype, input);
 
-            System.out.println("List of files in the archive");
+            System.out.println("The following files were found in the archive:");
             for (int x = 0; x < archive.getFiles().size(); x++) {
                 System.out.println("    " + archive.getFiles().item(x).getFileName());
             }
@@ -119,7 +119,7 @@ public class archivereader extends ConsoleDemo {
                 archive.setOverwrite(true);
                 archive.extractAll(optval(args, "-output"));
 
-                System.out.println("All files from archive extracted.\n");
+                System.out.println("All files from the archive have been extracted.\n");
             }
 
             confirmExit();

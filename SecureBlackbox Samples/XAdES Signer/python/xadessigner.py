@@ -16,15 +16,16 @@ import sys
 import string
 from secureblackbox import *
 
-input = sys.hexversion<0x03000000 and raw_input or input
+input = sys.hexversion < 0x03000000 and raw_input or input
+
 
 def ensureArg(args, prompt, index):
-  if len(args) <= index:
-    while len(args) <= index:
-      args.append(None)
-    args[index] = input(prompt)
-  elif args[index] is None:
-    args[index] = input(prompt)
+    if len(args) <= index:
+        while len(args) <= index:
+            args.append(None)
+        args[index] = input(prompt)
+    elif args[index] is None:
+        args[index] = input(prompt)
 
 
 def displayHelp(errMes):

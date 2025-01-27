@@ -16,9 +16,12 @@ unit samlspserverf;
 interface
 
 uses
-  SysUtils, Variants, Classes, Graphics,
+  Windows, SysUtils, Variants, Classes, Graphics, Messages,
   Controls, Forms, Dialogs, StdCtrls, ComCtrls, Buttons, ExtCtrls,
-  SBxConstants, SBxTypes, SBxCore, SBxSAMLSPServer, SBxTLSServer, SBxCertificateManager;
+  sbxConstants, sbxTypes, sbxCore, sbxSAMLSPServer, SBxCertificateManager;
+
+const
+  WM_LOG = WM_USER + 1;
 
 type
   TFormSamlspserver = class(TForm)
@@ -93,7 +96,6 @@ type
     Panel2: TPanel;
     Label21: TLabel;
     Label22: TLabel;
-    cbExternalServerMode: TCheckBox;
     procedure bbStartClick(Sender: TObject);
     procedure bbStopClick(Sender: TObject);
     procedure bbExportSPMetadataClick(Sender: TObject);
@@ -112,19 +114,24 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-    FTLSServer: TsbxTLSServer;
     FServer: TsbxSAMLSPServer;
     FAutoPath: string;
 
     function AdjustServer: boolean;
     function ExtractHTMLFile(const Name: string): string;
     procedure DoLog(const Line : string);
+    procedure DoLogAsync(const Line : string);
+    procedure LogCapture(var Msg : TMessage); message WM_LOG;
 
     procedure HandleCertMgrPasswordNeeded(Sender: TObject;
       var Password: String; var Cancel: Boolean);
-    procedure HandleConnect(Sender: TObject; ConnectionId: Int64;
-      const RemoteAddress: String; RemotePort: Integer);
-    procedure DoData(Sender: TObject; ConnectionID: Int64; const Buffer: TBytes);
+    procedure HandleServerError(Sender: TObject; ConnectionID: Int64;
+      const SessionID: String; ErrorCode: Integer; Fatal: Boolean;
+      Remote: Boolean; const Description: String);
+    procedure HandleUserAuthCompleted(Sender: TObject; ConnectionID: Int64;
+      const SessionID: String; const AssertionBody: String; const Auth: String;
+      const NameID: String; const NameIDFormat: String; const SessionIndex: String;
+      const ValidFrom: String; const ValidTo: String; const RelayState: String);
   public
     { Public declarations }
   end;
@@ -193,11 +200,28 @@ begin
   mmLog.Lines.Add(Line);
 end;
 
+procedure TFormSamlspserver.DoLogAsync(const Line : string);
+var
+  P : PWideChar;
+begin
+  GetMem(P, (Length(Line) + 1) * 2);
+  StrPCopy(P, Line);
+  PostMessage(Application.MainFormHandle, WM_LOG, NativeUInt(P), 0);
+end;
+
+procedure TFormSamlspserver.LogCapture(var Msg : TMessage);
+var
+  S : string;
+  P : PWideChar;
+begin
+  P := PWideChar(Msg.WParam);
+  S := StrPas(P);
+  FreeMem(P);
+  DoLog(S);
+end;
+
 procedure TFormSamlspserver.FormCreate(Sender: TObject);
 begin
-  FTLSServer := TsbxTLSServer.Create(nil);
-  FTLSServer.OnData := DoData;
-
   FServer := TsbxSAMLSPServer.Create(nil);
 end;
 
@@ -205,7 +229,6 @@ procedure TFormSamlspserver.FormDestroy(Sender: TObject);
 begin
   bbStopClick(Self);
   FreeAndNil(FServer);
-  FreeAndNil(FTLSServer);
 end;
 
 procedure TFormSamlspserver.bbAutoConfigClick(Sender: TObject);
@@ -219,8 +242,8 @@ end;
 
 procedure TFormSamlspserver.bbExportSPMetadataClick(Sender: TObject);
 var
-  Metadata : string;
-  SL : TStringList;
+  Metadata : TBytes;
+  F : TFileStream;
 begin
   if Length(edSPMetadata.Text) = 0 then
   begin
@@ -230,13 +253,13 @@ begin
 
   if AdjustServer then
   begin
-    Metadata := FServer.ExportSettings(true);
-    SL := TStringList.Create;
+    Metadata := TEncoding.UTF8.GetBytes(FServer.ExportSettings(true));
+
+    F := TFileStream.Create(edSPMetadata.Text, fmCreate);
     try
-      SL.Text := Metadata;
-      SL.SaveToFile(edSPMetadata.Text);
+      F.Write(Metadata[0], Length(Metadata));
     finally
-      FreeAndNil(SL);
+      FreeAndNil(F);
     end;
   end
   else
@@ -292,8 +315,8 @@ end;
 
 function TFormSamlspserver.AdjustServer: boolean;
 var
-  Metadata: string;
-  SL : TStringList;
+  Metadata: TBytes;
+  F : TFileStream;
   Mgr : TsbxCertificateManager;
 begin
   Result := false;
@@ -334,22 +357,22 @@ begin
     Exit;
   end;
 
-  SL := TStringList.Create;
+  F := TFileStream.Create(edIDPMetadata.Text, fmOpenRead);
   try
-    SL.LoadFromFile(edIDPMetadata.Text);
-    Metadata := SL.Text;
+    SetLength(Metadata, F.Size);
+    F.Read(Metadata[0], Length(Metadata));
   finally
-    FreeAndNil(SL);
+    FreeAndNil(F);
   end;
 
-  FServer.ImportSettings(Metadata, false);
+  FServer.ImportSettings(TEncoding.UTF8.GetString(Metadata), false);
 
-  FTLSServer.Port := ExtractPort(edURL.Text);
   FServer.Port := ExtractListenPort(edURL.Text);
   FServer.URL := edURL.Text;
   FServer.LogoutPage := edLogoutPage.Text;
   FServer.MetadataURL := edMetadataURL.Text;
   FServer.BaseDir := edProtectedResources.Text;
+  FServer.OfflineMode := false;
 
   if not cbACSRedirect.Checked and not cbACSPOST.Checked and not cbACSArtifact.Checked then
   begin
@@ -384,13 +407,19 @@ begin
     if edSignCert.Text <> '' then
       Mgr.ImportFromFile(edSignCert.Text, '')
     else
+    begin
       Mgr.CreateNew(SBxConstants.ctX509Certificate, 'generic', 'SAML SP signing certificate');
+      Mgr.Generate(2048);
+    end;
     FServer.SigningCertificate := Mgr.Certificate;
 
     if edEncCert.Text <> '' then
       Mgr.ImportFromFile(edEncCert.Text, '')
     else
+    begin
       Mgr.CreateNew(SBxConstants.ctX509Certificate, 'generic', 'SAML SP encryption certificate');
+      Mgr.Generate(2048);
+    end;
     FServer.DecryptionCertificate := Mgr.Certificate;
 
     if edMetaSignCert.Text <> '' then
@@ -406,7 +435,10 @@ begin
       if (edServerCert.Text <> '') then
         Mgr.ImportFromFile(edServerCert.Text, '')
       else
+      begin
         Mgr.CreateNew(SBxConstants.ctX509Certificate, 'tls', '127.0.0.1');
+        Mgr.Generate(2048);
+      end;
 
       FServer.TLSServerChain.Add(Mgr.Certificate);
       FServer.TLSSettings.TLSMode := smExplicitTLS;
@@ -416,7 +448,8 @@ begin
   end;
 
   FServer.RedirectOnLogoutPage := 'https://www.nsoftware.com';
-  FServer.OnConnect := HandleConnect;
+  FServer.OnError := HandleServerError;
+  FServer.OnUserAuthCompleted := HandleUserAuthCompleted;
 
   Result := true;
 end;
@@ -428,34 +461,28 @@ begin
   Cancel := false;
 end;
 
+procedure TFormSamlspserver.HandleServerError(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String; ErrorCode: Integer; Fatal: Boolean;
+  Remote: Boolean; const Description: String);
+begin
+  DoLogAsync('Server error ' + IntToStr(ErrorCode) + ' in session ' + SessionID + ': ' + Description);
+end;
+
+procedure TFormSamlspserver.HandleUserAuthCompleted(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String; const AssertionBody: String; const Auth: String;
+  const NameID: String; const NameIDFormat: String; const SessionIndex: String;
+  const ValidFrom: String; const ValidTo: String; const RelayState: String);
+begin
+  DoLogAsync('User authenticated in session ' + SessionID + ': ' + NameID + ' / ' + SessionIndex);
+end;
+
 procedure TFormSamlspserver.bbStartClick(Sender: TObject);
-var
-  Metadata: string;
-  SL : TStringList;
 begin
   if not AdjustServer then
   begin
     MessageDlg('Could not start the server due to configuration errors. Please correct the errors and try again.', mtError, [mbOk], 0);
     Exit;
   end;
-
-  if Length(edSPMetadata.Text) > 0 then
-  begin
-    SL := TStringList.Create;
-    try
-      SL.LoadFromFile(edSPMetadata.Text);
-      Metadata := SL.Text;
-    finally
-      FreeAndNil(SL);
-    end;
-
-    FServer.ImportSettings(Metadata, true);
-  end;
-
-  FServer.OfflineMode := cbExternalServerMode.Checked;
-
-  if cbExternalServerMode.Checked then
-    FTLSServer.Start;
 
   FServer.Start;
 
@@ -466,11 +493,8 @@ end;
 
 procedure TFormSamlspserver.bbStopClick(Sender: TObject);
 begin
-  if FServer.Active or FTLSServer.Active then
+  if FServer.Active then
   begin
-    if cbExternalServerMode.Checked then
-      FTLSServer.Stop;
-
     FServer.Stop;
 
     bbStart.Enabled := true;
@@ -521,21 +545,6 @@ procedure TFormSamlspserver.sbChooseSPMetadataClick(Sender: TObject);
 begin
   if OpenDlg.Execute then
     edSPMetadata.Text := OpenDlg.FileName;
-end;
-
-procedure TFormSamlspserver.HandleConnect(Sender: TObject; ConnectionId: Int64;
-  const RemoteAddress: String; RemotePort: Integer);
-begin
-  Sleep(0);
-end;
-
-procedure TFormSamlspserver.DoData(Sender: TObject; ConnectionID: Int64; const Buffer: TBytes);
-var
-  response: TBytes;
-begin
-  response := FServer.ProcessGenericRequest(ConnectionID, Buffer);
-
-  TsbxTLSServer(Sender).SendData(ConnectionID, response);
 end;
 
 end.

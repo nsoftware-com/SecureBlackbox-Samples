@@ -40,7 +40,7 @@ type
   private
     procedure SetFileContents(const FileName : string; const Content : TBytes);
     procedure HandleDecryptionInfoNeeded(Sender: TObject; var CancelDecryption: Boolean);
-    procedure HandleSaveExternalData(Sender: TObject; ExternalData: TBytes);
+    procedure HandleSaveExternalData(Sender: TObject; const ExternalData: TBytes);
   public
     { Public declarations }
   end;
@@ -90,7 +90,7 @@ begin
   FormXmlencprops.GetXMLDecryptionInfo(Sender as TsbxXMLDecryptor);
 end;
 
-procedure TFormXmldecryptor.HandleSaveExternalData(Sender: TObject; ExternalData: TBytes);
+procedure TFormXmldecryptor.HandleSaveExternalData(Sender: TObject; const ExternalData: TBytes);
 begin
   SaveDialogXML.Title := 'Save external data as';
   SaveDialogXML.FileName := '';

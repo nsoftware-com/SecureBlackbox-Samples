@@ -143,7 +143,7 @@ object FormSamlspserver: TFormSamlspserver
         Width = 553
         Height = 21
         TabOrder = 0
-        Text = 'http://sp.test.org:65080'
+        Text = 'http://127.0.0.1:65080'
       end
       object GroupBox1: TGroupBox
         Left = 16
@@ -627,21 +627,13 @@ object FormSamlspserver: TFormSamlspserver
           'Auto configuration finished!'
           
             'Please configure IdP sample first and then press <Start Server> ' +
-            'button for both samples.'
+            'button in both samples.'
           ''
-          'Please, try to open %URL% in your web browser.')
+          'Once started, navigate to %URL% in your web browser.')
         ParentFont = False
         ReadOnly = True
         TabOrder = 1
         Visible = False
-      end
-      object cbExternalServerMode: TCheckBox
-        Left = 16
-        Top = 230
-        Width = 137
-        Height = 17
-        Caption = 'External Server Mode'
-        TabOrder = 2
       end
     end
   end

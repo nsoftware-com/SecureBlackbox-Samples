@@ -50,8 +50,8 @@ class archivereader
                 "SYNOPSIS\n" +
                 "  archivereader <-arctype archive_type> <-input input_file> [-output output_path] [-pass decryption_password]\n\n" +
                 "DESCRIPTION\n" +
-                "  ArchiveReader demonstrates the usage of ArchiveReader from SecureBlackbox.\n" +
-                "  Used to extract files from archive.\n\n" +
+                "  This demo demonstrates the use of ArchiveReader component from SecureBlackbox.\n" +
+                "  Use it to extract files from existing archives.\n\n" +
                 "  The options are as follows:\n\n" +
                 "  -arctype      The type of archive (Required). Valid values:\n\n" +
                 "                  1 - AFT_ZIP\n" +
@@ -61,8 +61,8 @@ class archivereader
                 "                  5 - AFT_TAR_GZIP\n" +
                 "                  6 - AFT_TAR_BZIP_2\n\n" +
                 "  -input        An input archive file (Required).\n\n" +
-                "  -output       Where the extracted files will be saved.\n\n" +
-                "  -pass         The password for the encrypted archive.\n\n" +
+                "  -output       The directory to save the extracted files to.\n\n" +
+                "  -pass         A password to decrypt the encrypted archive.\n\n" +
                 "EXAMPLES\n" +
                 "  archivereader -arctype 1 -input C:\\archive\\helloworld.zip -output C:\\archive \n\n" +
                 "  archivereader -arctype 5 -input C:\\archive\\helloworld.tar -pass mypassword \n"
@@ -131,7 +131,7 @@ class archivereader
 
             archive.Open(arctype, input);
 
-            Console.WriteLine("List of files in the archive");
+            Console.WriteLine("The following files were found in the archive:");
             for (int x = 0; x < archive.Files.Count; x++)
             {
                 Console.WriteLine("    " + archive.Files[x].FileName);
@@ -144,7 +144,7 @@ class archivereader
                 archive.Overwrite = true;
                 archive.ExtractAll(optval(args, "-output"));
 
-                Console.WriteLine("All files from archive extracted.\n");
+                Console.WriteLine("All the files were successfully extracted.\n");
             }
 
             confirmExit();

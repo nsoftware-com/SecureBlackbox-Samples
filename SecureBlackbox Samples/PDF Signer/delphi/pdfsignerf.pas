@@ -130,7 +130,9 @@ begin
   FSigner.Widget.Invisible := not cbVisible.Checked;
 
   FSigner.IgnoreChainValidationErrors := true;
-  FSigner.NewSignature.PolicyID := '1.2.3.4.5';
+
+  //uncomment and specify real policy OID for EPES signatures
+  //FSigner.NewSignature.PolicyID := '1.2.3.4.5';
 
   if cbRequestTimestamp.Checked then
     FSigner.TimestampServer := editTSPServer.Text
@@ -181,7 +183,8 @@ end;
 procedure TFormPdfsigner.sbSignCertFileClick(Sender: TObject);
 begin
   dlgOpen.FileName := edSigningCertificate.Text;
-  dlgOpen.Filter := 'PEM-encoded certificate (*.pem)|*.PEM|DER-encoded certificate (*.cer)|*.CER|PFX-encoded certificate (*.pfx)|*.PFX';
+  dlgOpen.Filter := 'Certificates (*.pem, *.cer, *.crt, *.der, *.pfx, *.p12, *.pkcs12)|*.pem;*.cer;*.crt;*.der;*.pfx;*.p12;*.pkcs12|PEM-encoded certificates (*.pem)|*.pem|' +
+    'DER-encoded certificates (*.cer, *.crt, *.der)|*.cer;*.crt;*.der|PKCS#12 encoded certificates (*.pfx, *.p12, *.pkcs12)|*.pfx;*.p12;*.pkcs12|All files (*.*)|*.*';
   if dlgOpen.Execute then
     edSigningCertificate.Text := dlgOpen.FileName;
 end;

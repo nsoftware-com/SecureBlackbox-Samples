@@ -18,8 +18,8 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Windows, Messages,
   Controls, Forms, Dialogs, StdCtrls, Buttons, ComCtrls,
-  ExtCtrls,
-  SBxTypes, SBxCore, SBxSAMLIdPServer, SBxTLSServer, SBxCertificateManager;
+  ExtCtrls, sbxConstants, sbxTypes,
+  sbxCore, sbxSAMLIdPServer, sbxCertificateManager, sbxUserManager;
 
 const
   WM_LOG = WM_USER + 1;
@@ -107,7 +107,6 @@ type
     Label22: TLabel;
     Label23: TLabel;
     memoAuthForm: TMemo;
-    cbExternalServerMode: TCheckBox;
     procedure sbAddSPClick(Sender: TObject);
     procedure bbAddUserClick(Sender: TObject);
     procedure bbRemoveUserClick(Sender: TObject);
@@ -128,21 +127,25 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-    FTLSServer: TsbxTLSServer;
     FServer: TsbxSAMLIdPServer;
+    FUserMgr : TsbxUserManager;
     FAutoPath: string;
 
     procedure AdjustServer;
 
     procedure DoLog(const Line : string);
-    procedure DoSessionEstablished(Sender: TObject; ConnectionID: Int64; const Username: String);
-    procedure DoSessionClosed(Sender: TObject; ConnectionID: Int64);
-    procedure DoConnect(Sender: TObject; ConnectionId: Int64; const RemoteAddress: String;
-      RemotePort: Integer);
-    procedure DoError(Sender: TObject; ErrorCode: Integer; const Description: String);
-
-    procedure DoData(Sender: TObject; ConnectionID: Int64; Buffer: TBytes);
-
+    procedure DoSessionCreated(Sender: TObject; ConnectionID: Int64; const SessionID: String);
+    procedure DoSessionDestroyed(Sender: TObject; ConnectionID: Int64; const SessionID: String);
+    procedure DoSessionEvent(Sender: TObject; ConnectionID: Int64; const SessionID: String; const EventText: String);
+    procedure DoError(Sender: TObject; ConnectionID: Int64; const SessionID: string;
+      ErrorCode: Integer; Fatal, Remote: boolean; const Description: String);
+    procedure DoAuthnRequestReceived(Sender: TObject; ConnectionID: Int64; const SessionID: String;
+      const RequestID: String; const SP: String; IsEncrypted: Boolean; IsSigned: Boolean;
+      var NameIDFormat: String; var ForceAuthn: Boolean; var NonInteractive: Boolean;
+      var Authenticated: Boolean; var Action: Integer);
+    procedure DoUserAuthCompleted(Sender: TObject; ConnectionID: Int64; const SessionID: String;
+      const SP: String; const Auth: String; const Username: String; var NameID: String;
+      var NameIDFormat: String; var SessionIndex: String; var AssertionTTL: Integer);
     procedure AsyncLog(const S: string);
     procedure LogCapture(var Msg : TMessage); message WM_LOG;
 
@@ -161,12 +164,6 @@ uses
   SHLObj, credentialsf;
 
 {$R *.dfm}
-
-type
-  TInteger = class
-  public
-    Value: Int64;
-  end;
 
 function BrowseForFolder(var Foldr: string; Title: string): Boolean;
 var
@@ -218,29 +215,25 @@ begin
   mmLog.Lines.Add(Line);
 end;
 
-procedure TFormSamlidpserver.DoSessionEstablished(Sender: TObject;
-  ConnectionID: Int64; const Username: String);
+procedure TFormSamlidpserver.DoSessionCreated(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String);
 var
   Li: TListItem;
-  I: TInteger;
 begin
   lvSessions.Items.BeginUpdate;
   try
     Li := lvSessions.Items.Add;
-
-    I := TInteger.Create;
-    I.Value := ConnectionID;
-
-    Li.Data := I;
-    Li.Caption := Username;
+    Li.Caption := SessionID;
+    Li.SubItems.Add('Created');
   finally
     lvSessions.Items.EndUpdate;
   end;
 
-  AsyncLog('Session established: ' + Username + ', connection ID: ' + IntToStr(ConnectionID));
+  AsyncLog('Session creayed: ' + SessionID);
 end;
 
-procedure TFormSamlidpserver.DoSessionClosed(Sender: TObject; ConnectionID: Int64);
+procedure TFormSamlidpserver.DoSessionDestroyed(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String);
 var
   Li: TListItem;
   i: integer;
@@ -251,12 +244,9 @@ begin
     begin
       Li := lvSessions.Items[i];
 
-      if ConnectionID = TInteger(Li.Data).Value then
+      if SessionID = Li.Caption then
       begin
         lvSessions.Items.Delete(i);
-
-        TInteger(Li.Data).Free;
-        Li.Data := nil;
 
         Break;
       end;
@@ -265,19 +255,53 @@ begin
     lvSessions.Items.EndUpdate;
   end;
 
-  AsyncLog('Session closed: ' + IntToStr(ConnectionID));
+  AsyncLog('Session closed: ' + SessionID);
 end;
 
-procedure TFormSamlidpserver.DoConnect(Sender: TObject; ConnectionId: Int64;
-  const RemoteAddress: String; RemotePort: Integer);
+procedure TFormSamlidpserver.DoSessionEvent(Sender: TObject; ConnectionID: Int64; const SessionID: String;
+  const EventText: String);
+var
+  Li: TListItem;
+  i: integer;
 begin
-  AsyncLog('Client connected from ' + RemoteAddress + ':' + IntToStr(RemotePort));
+  lvSessions.Items.BeginUpdate;
+  try
+    for i := 0 to lvSessions.Items.Count - 1 do
+    begin
+      Li := lvSessions.Items[i];
+
+      if SessionID = Li.Caption then
+      begin
+        Li.SubItems[0] := EventText;
+
+        Break;
+      end;
+    end;
+  finally
+    lvSessions.Items.EndUpdate;
+  end;
 end;
 
-procedure TFormSamlidpserver.DoError(Sender: TObject; ErrorCode: Integer;
+procedure TFormSamlidpserver.DoError(Sender: TObject; ConnectionID: Int64;
+  const SessionID: string; ErrorCode: Integer; Fatal, Remote: boolean;
   const Description: String);
 begin
   AsyncLog('Error ' + IntToStr(ErrorCode) + ': ' + Description);
+end;
+
+procedure TFormSamlidpserver.DoAuthnRequestReceived(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String; const RequestID: String; const SP: String; IsEncrypted: Boolean;
+  IsSigned: Boolean; var NameIDFormat: String; var ForceAuthn: Boolean; var NonInteractive: Boolean;
+  var Authenticated: Boolean; var Action: Integer);
+begin
+  AsyncLog('AuthnRequest received from ' + SP + ' in session ID ' + SessionID);
+end;
+
+procedure TFormSamlidpserver.DoUserAuthCompleted(Sender: TObject; ConnectionID: Int64;
+  const SessionID: String; const SP: String; const Auth: String; const Username: String;
+  var NameID: String; var NameIDFormat: String; var SessionIndex: String; var AssertionTTL: Integer);
+begin
+  AsyncLog('User authentication "' + Auth + '" completed for session ID ' + SessionID + ': ' + Username);
 end;
 
 procedure TFormSamlidpserver.AsyncLog(const S: string);
@@ -302,17 +326,17 @@ end;
 
 procedure TFormSamlidpserver.FormCreate(Sender: TObject);
 begin
-  FTLSServer := TsbxTLSServer.Create(nil);
-  FTLSServer.OnData := DoData;
-
   FServer := TsbxSAMLIdPServer.Create(nil);
+  FUserMgr := TsbxUserManager.Create(nil);
 end;
 
 procedure TFormSamlidpserver.FormDestroy(Sender: TObject);
 begin
-  bbStopClick(Self);
+  if FServer.Active then
+    bbStopClick(Self);
+
   FreeAndNil(FServer);
-  FreeAndNil(FTLSServer);
+  FreeAndNil(FUserMgr);
 end;
 
 procedure TFormSamlidpserver.bbAddUserClick(Sender: TObject);
@@ -338,6 +362,8 @@ begin
 end;
 
 procedure TFormSamlidpserver.bbExportIDPMetadataClick(Sender: TObject);
+var
+  MD : TBytes;
 begin
   if Length(edIDPMetadata.Text) = 0 then
   begin
@@ -346,7 +372,13 @@ begin
   end;
 
   AdjustServer;
-  FServer.SaveMetadata(edIDPMetadata.Text);
+  MD := TEncoding.UTF8.GetBytes(FServer.ExportSettings(true, -1));
+  with TFileStream.Create(edIDPMetadata.Text, fmCreate) do
+    try
+      Write(MD[0], Length(MD));
+    finally
+      Free;
+    end;
 end;
 
 procedure TFormSamlidpserver.bbGoto2Click(Sender: TObject);
@@ -383,7 +415,6 @@ end;
 procedure TFormSamlidpserver.AdjustServer;
 var
   Mgr : TsbxCertificateManager;
-  S: string;
 begin
   if Length(edURL.Text) = 0 then
   begin
@@ -406,54 +437,26 @@ begin
     Exit;
   end;
 
-  FTLSServer.Port := ExtractPort(edURL.Text);
   FServer.Port := ExtractListenPort(edURL.Text); // note: if custom port is provided, it will be adjusted in the following URL assignment
   FServer.URL := edURL.Text;
   FServer.MetadataURL := edMetadataURL.Text;
-
-  FServer.SingleSignOnService := edSSO.Text;
-  FServer.SingleLogoutService := edSLS.Text;
-  FServer.SingleSignOnServiceBindings := '';
-  FServer.SingleLogoutServiceBindings := '';
-  S := '';
+  FServer.BaseDir := FAutoPath;
 
   if cbSSORedirect.Checked then
-    S := S + 'Redirect,';
+    FServer.AddIdPService(spsSingleSignOnService, sbxconstants.csbtRedirect, edSSO.Text, 0, 0);
   if cbSSOPOST.Checked then
-    S := S + 'POST,';
+    FServer.AddIdPService(spsSingleSignOnService, sbxconstants.csbtPOST, edSSO.Text, 0, 0);
   if cbSSOArtifact.Checked then
-    S := S + 'Artifact,';
+    FServer.AddIdPService(spsSingleSignOnService, sbxconstants.csbtArtifact, edSSO.Text, 0, 0);
 
-  if S[Length(S)] = ',' then
-    Delete(S, Length(S), 1);
+  if cbSLSRedirect.Checked then
+    FServer.AddIdPService(spsSingleLogoutService, sbxconstants.csbtRedirect, edSLS.Text, 0, 0);
+  if cbSLSPOST.Checked then
+    FServer.AddIdPService(spsSingleLogoutService, sbxconstants.csbtPOST, edSLS.Text, 0, 0);
+  if cbSLSArtifact.Checked then
+    FServer.AddIdPService(spsSingleLogoutService, sbxconstants.csbtArtifact, edSLS.Text, 0, 0);
 
-  if Length(S) = 0 then
-  begin
-    ShowMessage('Single SignOn Service bindings are not set!');
-    Exit;
-  end;
-
-  FServer.SingleSignOnServiceBindings := S;
-  S := '';
-
-  if cbSSORedirect.Checked then
-    S := S + 'Redirect,';
-  if cbSSOPOST.Checked then
-    S := S + 'POST,';
-  if cbSSOArtifact.Checked then
-    S := S + 'Artifact,';
-
-  if S[Length(S)] = ',' then
-    Delete(S, Length(S), 1);
-
-  if Length(S) = 0 then
-  begin
-    ShowMessage('Single Logout Service bindings are not set!');
-    Exit;
-  end;
-
-  FServer.SingleLogoutServiceBindings := S;
-  FServer.AuthFormTemplate := memoAuthForm.Text;
+  FServer.SignOnPageTemplate := memoAuthForm.Text;
 
   Mgr := TsbxCertificateManager.Create(nil);
   try
@@ -461,13 +464,19 @@ begin
     if edSignCert.Text <> '' then
       Mgr.ImportFromFile(edSignCert.Text, '')
     else
-      Mgr.GetSampleCert('generic', 'SAML IdP signing certificate');
+    begin
+      Mgr.CreateNew(sbxconstants.ctX509Certificate, 'generic', 'SAML IdP signing certificate');
+      Mgr.Generate(2048);
+    end;
     FServer.SigningCertificate := Mgr.Certificate;
 
     if edEncCert.Text <> '' then
       Mgr.ImportFromFile(edEncCert.Text, '')
     else
-      Mgr.GetSampleCert('generic', 'SAML IdP encryption certificate');
+    begin
+      Mgr.CreateNew(sbxconstants.ctX509Certificate, 'generic', 'SAML IdP encryption certificate');
+      Mgr.Generate(2048);
+    end;
     FServer.EncryptionCertificate := Mgr.Certificate;
 
     if edMetaSignCert.Text <> '' then
@@ -483,10 +492,12 @@ begin
       if (edServerCert.Text <> '') then
         Mgr.ImportFromFile(edServerCert.Text, '')
       else
-        Mgr.GetSampleCert('tls', '127.0.0.1');
-      FServer.ServerCertificates.Add(Mgr.Certificate);
-      //FServer.UseTLS := true;
-      FServer.TLSSettings.TLSMode := smExplicitTLS;
+      begin
+        Mgr.CreateNew(sbxconstants.ctX509Certificate, 'tls', '127.0.0.1');
+        Mgr.Generate(2048);
+      end;
+      FServer.TLSServerChain.Add(Mgr.Certificate);
+      FServer.TLSSettings.TLSMode := smImplicitTLS;
     end;
   finally
     FreeAndNil(Mgr);
@@ -502,8 +513,10 @@ end;
 
 procedure TFormSamlidpserver.bbStartClick(Sender: TObject);
 var
-  i: integer;
+  i, idx: integer;
   Login, Email: string;
+  Buf : TBytes;
+  F : TFileStream;
 begin
   if lvUsers.Items.Count = 0 then
   begin
@@ -516,7 +529,7 @@ begin
     Exit;
   end;
 
-  FServer.ClearUsers;
+  FUserMgr.Reset;
   lvUsers.Items.BeginUpdate;
   try
     for i := 0 to lvUsers.Items.Count - 1 do
@@ -528,26 +541,39 @@ begin
       else
         Email := '';
 
-      FServer.AddUserWithEmail(Login, Email, lvUsers.Items[i].SubItems[0]);
+      idx := FUserMgr.AddUser(Login);
+      FUserMgr.Users[idx].Email := Email;
+      FUserMgr.Users[idx].Password := lvUsers.Items[i].SubItems[0];
     end;
   finally
     lvUsers.Items.EndUpdate;
   end;
 
-  for i := 0 to lbKnownSPs.Count - 1 do
-    FServer.LoadSPMetadata(lbKnownSPs.Items[i]);
+  FServer.Users := FUserMgr.Users;
 
-  FServer.OnSessionEstablished := DoSessionEstablished;
-  FServer.OnSessionClosed := DoSessionClosed;
-  FServer.OnConnect := DoConnect;
+  for i := 0 to lbKnownSPs.Count - 1 do
+  begin
+    F := TFileStream.Create(lbKnownSPs.Items[i], fmOpenRead);
+    try
+      SetLength(Buf, F.Size);
+      F.Read(Buf[0], Length(Buf));
+    finally
+      FreeAndNil(F);
+    end;
+
+    FServer.ImportSettings(TEncoding.UTF8.GetString(Buf), false);
+  end;
+
+  FServer.OnSessionCreated := DoSessionCreated;
+  FServer.OnSessionDestroyed := DoSessionDestroyed;
+  FServer.OnSessionEvent := DoSessionEvent;
+  FServer.OnAuthnRequestReceived := DoAuthnRequestReceived;
+  FServer.OnUserAuthCompleted := DoUserAuthCompleted;
   FServer.OnError := DoError;
 
   AdjustServer;
 
-  FServer.OfflineMode := cbExternalServerMode.Checked;
-
-  if cbExternalServerMode.Checked then
-    FTLSServer.Start;
+  FServer.OfflineMode := false;
 
   FServer.Start;
 
@@ -559,15 +585,12 @@ end;
 
 procedure TFormSamlidpserver.bbStopClick(Sender: TObject);
 begin
-  if FServer.Active or FTLSServer.Active then
+  if FServer.Active then
   begin
     bbStop.Enabled := false;
     bbStart.Enabled := true;
 
-    if cbExternalServerMode.Checked then
-      FTLSServer.Stop
-    else
-      FServer.Stop;
+    FServer.Stop;
 
     mmLog.Lines.Add('Identity provider service stopped!');
   end;
@@ -613,15 +636,6 @@ procedure TFormSamlidpserver.sbChooseSPMetadataClick(Sender: TObject);
 begin
   if OpenDlg.Execute then
     edSPMetadata.Text := OpenDlg.FileName;
-end;
-
-procedure TFormSamlidpserver.DoData(Sender: TObject; ConnectionID: Int64; Buffer: TBytes);
-var
-  response: TBytes;
-begin
-  response := FServer.ProcessGenericRequest(Buffer);
-
-  TsbxTLSServer(Sender).SendData(ConnectionID, response);
 end;
 
 end.

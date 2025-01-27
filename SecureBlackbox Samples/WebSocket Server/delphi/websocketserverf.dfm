@@ -126,8 +126,8 @@ object FormWebsocketserver: TFormWebsocketserver
     Top = 239
     Width = 396
     Height = 194
-    Lines.Strings = (
-      '')
+    ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 3
   end
   object OpenFileDlg: TOpenDialog

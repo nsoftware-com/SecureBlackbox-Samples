@@ -49,7 +49,7 @@ type
     FStarted: TDateTime;
     FStartTicks: Cardinal;
     procedure DoAccept(Sender: TObject; const RemoteAddress: string; RemotePort: Integer; var Accept: Boolean);
-    procedure DoData(Sender: TObject; ConnectionID: Int64; Buffer: TBytes);
+    procedure DoData(Sender: TObject; ConnectionID: Int64; const Buffer: TBytes);
     procedure DoError(Sender: TObject; ConnectionID: Int64; ErrorCode: Integer; Fatal: Boolean;
       Remote: Boolean; const Description: string);
     procedure DoTLSEstablished(Sender: TObject; ConnectionID: Int64);
@@ -131,7 +131,7 @@ begin
   Log('Accepted a new client from ' + RemoteAddress + ':' + IntToStr(RemotePort));
 end;
 
-procedure TFormDtlsServer.DoData(Sender: TObject; ConnectionID: Int64; Buffer: TBytes);
+procedure TFormDtlsServer.DoData(Sender: TObject; ConnectionID: Int64; const Buffer: TBytes);
 var
   T: AnsiString;
   S: string;

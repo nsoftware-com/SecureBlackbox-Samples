@@ -38,7 +38,9 @@ type
     procedure btnDecryptClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
   private
-    procedure HandleEncrypted(Sender: TObject; CertUsed: boolean; const IssuerRDN: string; SerialNumber: TBytes; SubjectKeyID: TBytes; NeedCredential: boolean; var SkipThis: Boolean);
+    procedure HandleEncrypted(Sender: TObject; CertUsed: boolean; const IssuerRDN: string;
+      const SerialNumber: TBytes; const SubjectKeyID: TBytes; NeedCredential: boolean;
+      var SkipThis: Boolean);
   public
     { Public declarations }
   end;
@@ -66,7 +68,9 @@ begin
     editDest.Text := SaveDialogPDF.FileName;
 end;
 
-procedure TFormPdfdecryptor.HandleEncrypted(Sender: TObject; CertUsed: boolean; const IssuerRDN: string; SerialNumber: TBytes; SubjectKeyID: TBytes; NeedCredential: boolean; var SkipThis: Boolean);
+procedure TFormPdfdecryptor.HandleEncrypted(Sender: TObject; CertUsed: boolean;
+  const IssuerRDN: string; const SerialNumber: TBytes; const SubjectKeyID: TBytes;
+  NeedCredential: boolean; var SkipThis: Boolean);
 begin
   FormPdfencprops.SetPDFEncryptionProps(Sender as TsbxPDFDecryptor);
 

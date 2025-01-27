@@ -89,8 +89,6 @@ implementation
 
 uses openarchivef, progressf, certificatef, passwordf, usignf;
 
-//{$R 'SecureBlackbox.ZIPSFX.Console.res'}
-
 function PathCutLastComponent(const Path : string) : string;
 var
   i : integer;

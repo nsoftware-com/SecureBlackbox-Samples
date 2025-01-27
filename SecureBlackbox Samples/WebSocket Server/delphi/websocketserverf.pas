@@ -18,7 +18,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
-  SBxTypes, SBxCertificateManager, SBxWebSocketServer, Winapi.ShellAPI;
+  sbxtypes, sbxCertificateManager, sbxWebSocketServer, Winapi.ShellAPI;
 
 type
   TFormWebsocketserver = class(TForm)
@@ -166,6 +166,9 @@ end;
 procedure TFormWebsocketserver.FormCreate(Sender: TObject);
 begin
   FServer := TsbxWebSocketServer.Create(nil);
+
+  mmLog.Lines.Add('*** IMPORTANT - PLEASE READ ***');
+  mmLog.Lines.Add('Please copy the index.html and client.js files residing next to the project files to the directory containing the compiled demo executable (typically Debug\Win32) - the demo needs them and will not work otherwise!');
 end;
 
 procedure TFormWebsocketserver.FormDestroy(Sender: TObject);
@@ -177,7 +180,8 @@ end;
 procedure TFormWebsocketserver.SpeedButton1Click(Sender: TObject);
 begin
   OpenFileDlg.Title := 'Select certificate file';
-  OpenFileDlg.Filter := 'PEM-encoded certificate (*.pem)|*.PEM|DER-encoded certificate (*.cer)|*.CER|PFX-encoded certificate (*.pfx)|*.PFX';
+  OpenFileDlg.Filter := 'Certificates (*.pem, *.cer, *.crt, *.der, *.pfx, *.p12, *.pkcs12)|*.pem;*.cer;*.crt;*.der;*.pfx;*.p12;*.pkcs12|PEM-encoded certificates (*.pem)|*.pem|' +
+    'DER-encoded certificates (*.cer, *.crt, *.der)|*.cer;*.crt;*.der|PKCS#12 encoded certificates (*.pfx, *.p12, *.pkcs12)|*.pfx;*.p12;*.pkcs12|All files (*.*)|*.*';
   if OpenFileDlg.Execute then
     edCertFile.Text := OpenFileDlg.FileName;
 end;

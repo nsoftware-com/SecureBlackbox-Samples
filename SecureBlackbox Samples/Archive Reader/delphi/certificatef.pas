@@ -47,7 +47,7 @@ begin
     if Certificate.PrivateKeyExists then
       ModalResult := IDOK
     else
-      MessageDlg('There is no private key for this certificate.', mtError, [mbOk], 0);
+      MessageDlg('No private key is available for this certificate.', mtError, [mbOk], 0);
   except
     on E: Exception do
       MessageDlg('Failed to load certificate (' + E.Message + ')', mtError, [mbOk], 0);

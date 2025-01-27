@@ -32,7 +32,7 @@ src: ../../src/secureblackbox.o
 
 else # LINUX
 CPU=$(shell uname -m)
-# Assumed that a product is always built for Windows-x64 platform
+# It's assumed that a product is always built for Linux/x64 platform
 ifeq ($(CPU), $(filter $(CPU), aarch64 arm64))
   LIB=lib64/aarch64
 endif

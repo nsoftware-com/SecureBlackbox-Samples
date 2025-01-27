@@ -107,7 +107,8 @@ end;
 procedure TFormXmlencryptor.btnBrowseCertClick(Sender: TObject);
 begin
   OpenDialogCert.Filename := edCert.Text;
-  OpenDialogCert.Filter := 'Raw X.509 certificate (*.cer, *.csr, *.crt)|*.cer;*.csr;*.crt|PEM-encoded X.509 certificate (*.pem)|*.pem|PKCS#12 certificate (*.pfx, *.p12)|*.pfx; *.p12|All files (*.*)|*.*';
+  OpenDialogCert.Filter := 'Certificates (*.pem, *.cer, *.crt, *.der, *.pfx, *.p12, *.pkcs12)|*.pem;*.cer;*.crt;*.der;*.pfx;*.p12;*.pkcs12|PEM-encoded certificates (*.pem)|*.pem|' +
+    'DER-encoded certificates (*.cer, *.crt, *.der)|*.cer;*.crt;*.der|PKCS#12 encoded certificates (*.pfx, *.p12, *.pkcs12)|*.pfx;*.p12;*.pkcs12|All files (*.*)|*.*';
   if OpenDialogCert.Execute then
     edCert.Text := OpenDialogCert.Filename;
 end;
